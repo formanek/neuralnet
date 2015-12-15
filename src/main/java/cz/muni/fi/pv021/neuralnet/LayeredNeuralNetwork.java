@@ -2,6 +2,7 @@ package cz.muni.fi.pv021.neuralnet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
@@ -97,5 +98,63 @@ public class LayeredNeuralNetwork {
             outputs[i] = outputNeurons.get(i).getFunctionOutput();
         }
         return outputs;
+    }
+    
+    public String weightsToString() {
+        String result = new String ();
+        for (NeuralNetworkLayer layer : this.layers) {
+            for (Neuron neuron : layer.getNeurons()) {
+                result += "[";
+                for (NeuralConnection connection : neuron.getInputs()) {
+                    result += connection.getWeight() + ", ";
+                }
+                result += "]";
+            }
+        result += "\n";
+        }
+        return result;
+    }
+    public String deltasToString() {
+        String result = new String ();
+        for (NeuralNetworkLayer layer : this.layers) {
+            for (Neuron neuron : layer.getNeurons()) {
+                result += "[";
+                    result += neuron.getDelta() + ", ";
+                
+                result += "]";
+            }
+        result += "\n";
+        }
+        return result;
+    }
+     
+    
+    public String weightChangesToString() {
+        String result = new String ();
+        for (NeuralNetworkLayer layer : this.layers) {
+            for (Neuron neuron : layer.getNeurons()) {
+                result += "[";
+                for (NeuralConnection connection : neuron.getInputs()) {
+                    result += connection.getWeightChange() + ",";
+                }
+                result += "]";
+            }
+        result += "\n";
+        }
+        return result;
+    }
+
+    public String outputsToString() {
+        String result = new String ();
+        for (NeuralNetworkLayer layer : this.layers) {
+            for (Neuron neuron : layer.getNeurons()) {
+                result += "[";
+                    result += neuron.getFunctionOutput();
+                
+                result += "]";
+            }
+        result += "\n";
+        }
+        return result;
     }
 }

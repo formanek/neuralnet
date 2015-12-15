@@ -17,6 +17,7 @@ public class LayeredNeuralNetworkBuilder {
 
     private int[] architecture;
     private UnaryOperator<Double> activationFunction;
+    private UnaryOperator<Double> activationFunctionDerivation;
     private DoubleSupplier initialWeigthSupplier;
 
     /**
@@ -41,7 +42,18 @@ public class LayeredNeuralNetworkBuilder {
         Objects.requireNonNull(activationFunction, "null activation function");
         this.activationFunction = activationFunction;
     }
-
+    
+    /**
+     * Sets the derivation of activation function for all neurons in hidden layers
+     *
+     * @param activationFunctionDerivation function to be applied to scalar product of input neurons outputs
+     */
+    public void setActivationFunctionDerivation(UnaryOperator<Double> activationFunctionDerivation) {
+        Objects.requireNonNull(activationFunction, "null activation function");
+        this.activationFunctionDerivation = activationFunctionDerivation;
+    }
+    
+    
     /**
      * Sets the method of weight initialization for all connections between neurons
      *
@@ -70,11 +82,11 @@ public class LayeredNeuralNetworkBuilder {
         InputNeuralNetworkLayer inputLayer = new InputNeuralNetworkLayer(architecture[0]);
         LayeredNeuralNetwork network = new LayeredNeuralNetwork(inputLayer);
         for (int i = 1; i < architecture.length; i++) {
-            if (i == architecture.length - 1) {
+            /*if (i == architecture.length - 1) {
                 activationFunction = UnaryOperator.identity();
-            }
+            }*/
             NeuralNetworkLayer layer = new NeuralNetworkLayer(
-                    architecture[i], activationFunction, initialWeigthSupplier
+                    architecture[i], activationFunction, activationFunctionDerivation, initialWeigthSupplier
             );
             network.addLayer(layer, initialWeigthSupplier);
         }

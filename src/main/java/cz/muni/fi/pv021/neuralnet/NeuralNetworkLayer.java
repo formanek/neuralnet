@@ -1,5 +1,6 @@
 package cz.muni.fi.pv021.neuralnet;
 
+import com.sun.org.apache.xpath.internal.operations.UnaryOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,9 +23,10 @@ public class NeuralNetworkLayer {
      * @param activationFunction function to be applied to scalar product of input neurons outputs
      * @param initialBiasSupplier function to specify initial bias for each neuron
      */
-    public NeuralNetworkLayer(int size, UnaryOperator<Double> activationFunction,
-            DoubleSupplier initialBiasSupplier) {
+    public NeuralNetworkLayer(int size, UnaryOperator<Double> activationFunction
+            , UnaryOperator<Double> activationFunctionDerivation, DoubleSupplier initialBiasSupplier) {
         Objects.requireNonNull(activationFunction, "null activation function");
+        Objects.requireNonNull(activationFunctionDerivation, "null derivation of activation function");
         Objects.requireNonNull(initialBiasSupplier, "null initial bias supplier");
         if (size < 1) {
             throw new IllegalArgumentException("size must be at least 1");
@@ -32,7 +34,7 @@ public class NeuralNetworkLayer {
         neurons = new ArrayList<>(size);
         BiasNeuron bias = new BiasNeuron();
         for (int i = 0; i < size; i++) {
-            Neuron neuron = new BasicNeuron(activationFunction);
+            Neuron neuron = new BasicNeuron(activationFunction, activationFunctionDerivation);
             bias.connectTo(neuron, initialBiasSupplier.getAsDouble());
             neurons.add(neuron);
         }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Special neuron that allows using bias as if it was weighted output of another neuron
@@ -40,4 +41,19 @@ public class BiasNeuron implements Neuron {
     @Override
     public void computeFunction() {
     }
+    
+    @Override
+    public double getDelta() {
+        return 0.0;
+    }
+    
+    @Override
+    public void computeLastLayerDelta(double delta) {
+    }
+    
+    @Override
+    public void computeDelta() {
+    }
+    @Override
+    public UnaryOperator getActivationFunctionDerivation() {return null;}
 }

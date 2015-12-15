@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Special neuron that only represents network inputs (data), no own inputs or bias
@@ -50,4 +51,20 @@ public class InputNeuron implements Neuron {
     public void setValue(double value) {
         this.value = value;
     }
+    
+    @Override
+    public double getDelta() {
+        return 0.0;
+    }
+    
+    @Override
+    public void computeLastLayerDelta(double delta) {
+    }
+    
+    @Override
+    public void computeDelta() {
+    }
+    
+    @Override
+    public UnaryOperator getActivationFunctionDerivation() {return null;}
 }

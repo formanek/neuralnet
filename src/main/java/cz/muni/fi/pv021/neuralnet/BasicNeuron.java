@@ -15,16 +15,20 @@ public class BasicNeuron implements Neuron {
     private final List<NeuralConnection> inputs = new ArrayList<>();
     private final List<NeuralConnection> outputs = new ArrayList<>();
     private final UnaryOperator<Double> activationFunction;
+    private final UnaryOperator<Double> activationFunctionDerivation;
     private double functionOutput = 0.0;
+    private double delta = 0.0;
 
     /**
      * Constructs neuron with given activation function, ready to be connected with others
      *
      * @param activationFunction function to be applied to scalar product of input neurons outputs
      */
-    public BasicNeuron(UnaryOperator<Double> activationFunction) {
+    public BasicNeuron(UnaryOperator<Double> activationFunction
+            , UnaryOperator<Double> activationFunctionDerivation) {
         Objects.requireNonNull(activationFunction, "null activation function");
         this.activationFunction = activationFunction;
+        this.activationFunctionDerivation = activationFunctionDerivation;
     }
 
     @Override
@@ -61,11 +65,39 @@ public class BasicNeuron implements Neuron {
             double value = input.getInputNeuron().getFunctionOutput();
             sum += input.getWeight() * value;
         }
-        functionOutput = activationFunction.apply(sum);
+        //System.out.println("Suma: " + sum);
+        //System.out.println("Suma + actFun: " + this.activationFunction.apply(sum));
+        //System.out.println("Suma + tanh: " + Math.tanh(sum));
+        this.functionOutput = this.activationFunction.apply(sum);
     }
 
     @Override
     public double getFunctionOutput() {
-        return functionOutput;
+        return this.functionOutput;
     }
+        @Override
+    public double getDelta() {
+        return this.delta;
+    }
+    
+    @Override
+    public void computeLastLayerDelta(double refOutput) {
+        this.delta = -(this.functionOutput - refOutput) * this.activationFunctionDerivation.apply(this.functionOutput);
+    }
+    
+    @Override
+    public void computeDelta() {
+        
+        this.delta = 0;
+        for (NeuralConnection connection : this.outputs) {
+            this.delta += connection.getOutputNeuron().getDelta() * connection.getWeight();
+        }
+        this.delta *= this.activationFunctionDerivation.apply(this.functionOutput);
+    }
+    
+    @Override
+    public UnaryOperator getActivationFunctionDerivation() {
+        return this.activationFunctionDerivation;
+    }
+
 }

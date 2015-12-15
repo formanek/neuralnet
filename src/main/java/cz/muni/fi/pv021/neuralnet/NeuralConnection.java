@@ -12,6 +12,7 @@ public class NeuralConnection {
     private final Neuron input;
     private final Neuron output;
     private double weight;
+    private double weightChange;
 
     /**
      * Connects two neurons
@@ -26,6 +27,7 @@ public class NeuralConnection {
         this.input = input;
         this.output = output;
         this.weight = weight;
+        this.weightChange = 0;
     }
 
     /**
@@ -62,5 +64,26 @@ public class NeuralConnection {
      */
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+    
+    public void clearWeightChange() {
+        this.weightChange = 0;
+    }
+    
+    public void incrementWeightChange(double epsilon) {
+        /*System.out.println("Inkrement: " + this.output.getDelta() 
+                * (double) this.output.getActivationFunctionDerivation().apply(this.output.getFunctionOutput())
+                * this.input.getFunctionOutput() + " (" + epsilon + " * " + this.output.getDelta() + " * "
+                + this.input.getFunctionOutput() + ")");*/
+        this.weightChange += epsilon * this.output.getDelta() 
+                * this.input.getFunctionOutput();
+    }
+    
+    public void adaptWeight(double epsilon) {
+        this.weight += this.weightChange;
+    } 
+    
+    public double getWeightChange() {
+        return this.weightChange;
     }
 }
