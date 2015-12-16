@@ -13,8 +13,22 @@ import java.util.function.UnaryOperator;
  * @author David Formanek
  */
 public class Main {
+    
+    private static Configuration conf;
 
-    private static LayeredNeuralNetwork buildNetwork(int... architecture) {
+    private static LayeredNeuralNetwork buildNetworkTanh(double minWeight, double maxWeight, int... architecture) {
+        LayeredNeuralNetworkBuilder builder = new LayeredNeuralNetworkBuilder();
+        builder.setArchitecture(architecture);
+        builder.setActivationFunction(new HyperbolicTangens(1.7159, 2.0 / 3.0));
+        builder.setActivationFunctionDerivation(new HyperbolicTangensDerivation(1.7159, 2.0 / 3.0));
+        
+        builder.setInitialWeigthSupplier(new UniformRandomInterval(-1.0, 1.0, new Random()));
+        //builder.setInitialWeigthSupplier(new UniformRandomInterval(-0.0, 0.0, new Random())); // pro porovnani s Python verzi
+        
+        return builder.build();
+    }
+    
+    private static LayeredNeuralNetwork buildNetworkSigmoid(double minWeight, double maxWeight, int... architecture) {
         LayeredNeuralNetworkBuilder builder = new LayeredNeuralNetworkBuilder();
         builder.setArchitecture(architecture);
         //builder.setActivationFunction(new HyperbolicTangens(1.7159, 2.0 / 3.0));
@@ -28,33 +42,17 @@ public class Main {
         return builder.build();
     }
     
-    private static void classificationRSA() throws IOException{
-        List<DatasetExample> dataset = InputDataCSV.getDataFromFile("modulus_learning_set_processed.txt");
-        /*for (DatasetExample example : dataset) {
-            System.out.println(example.toString() + "\n");
-        }*/
-        LayeredNeuralNetwork network = buildNetwork(11, 15, 15, 7);
-        Trainer trainer = new Trainer(network, dataset, (double) 0.9);
-        trainer.train(40);
-    }
-
-    private static void classificationTrivial() throws IOException{
-        List<DatasetExample> dataset = InputDataCSV.getDataFromFile("trivial.txt");
-        /*for (DatasetExample example : dataset) {
-            System.out.println(example.toString() + "\n");
-        }*/
-        LayeredNeuralNetwork network = buildNetwork(6, 8, 1);
-        Trainer trainer = new Trainer(network, dataset, (double) 0.5);
-        trainer.train(1000);
-    }
-    
     public static void main(String[] args) throws IOException {
-        try {
-            PrintStream out = new PrintStream(new FileOutputStream("netBeansOutput.txt"));
+        
+        //toto presmeruje vysstup do souboru
+        /*try {
+            PrintStream out = new PrintStream(new FileOutputStream("outputFile.txt"));
             System.setOut(out);
         } catch (Exception e) {
             System.out.println(e);
-        }
+        }*/
+        
+        
         // usage example
         /*LayeredNeuralNetwork network = buildNetwork(3, 7, 4);
         network.setData(new double[]{0.25, -0.72, 0.44});
@@ -67,12 +65,30 @@ public class Main {
         
         
         
-        
-        
-        
-        //Main.classificationRSA();
-        Main.classificationTrivial();
-        // TODO learn, use and evaluate the network
+        if (args.length == 1) {
+            try {
+                conf = new Configuration(args[0]);
+                //System.out.println("Settings loaded: " + conf.toString());
+                if(conf.getActivationFunction().equalsIgnoreCase("sigmoid")) {
+                    LayeredNeuralNetwork network = buildNetworkSigmoid(conf.getMinWeightInit(), conf.getMaxWeightInit(), conf.getArchitecture());
+                    Trainer trainer = new Trainer(network, conf);
+                    trainer.train();
+                    trainer.test();
+                } else if (conf.getActivationFunction().equalsIgnoreCase("tanh")) {
+                    LayeredNeuralNetwork network = buildNetworkTanh(conf.getMinWeightInit(), conf.getMaxWeightInit(), conf.getArchitecture());
+                    Trainer trainer = new Trainer(network, conf);
+                    trainer.train();
+                    trainer.test();
+                }
+
+            } catch (Exception e) {
+                System.err.println("Error while loading settings:\n\t" + e);
+            }
+            
+        } else {
+            System.out.println("HELP:\nPlease pass the configuration file as the only parameter.");
+        }
+
     }
 
 }
