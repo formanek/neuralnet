@@ -45,12 +45,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         
         //toto presmeruje vysstup do souboru
-        /*try {
+        try {
             PrintStream out = new PrintStream(new FileOutputStream("outputFile.txt"));
             System.setOut(out);
         } catch (Exception e) {
             System.out.println(e);
-        }*/
+        }
         
         
         // usage example
