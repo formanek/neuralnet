@@ -16,27 +16,27 @@ public class Main {
     
     private static Configuration conf;
 
-    private static LayeredNeuralNetwork buildNetworkTanh(double minWeight, double maxWeight, int... architecture) {
+    private static LayeredNeuralNetwork buildNetworkTanh(double a, double b, double minWeight, double maxWeight, int... architecture) {
         LayeredNeuralNetworkBuilder builder = new LayeredNeuralNetworkBuilder();
         builder.setArchitecture(architecture);
-        builder.setActivationFunction(new HyperbolicTangens(1.7159, 2.0 / 3.0));
-        builder.setActivationFunctionDerivation(new HyperbolicTangensDerivation(1.7159, 2.0 / 3.0));
+        builder.setActivationFunction(new HyperbolicTangens(a, b));
+        builder.setActivationFunctionDerivation(new HyperbolicTangensDerivation(a, b));
         
-        builder.setInitialWeigthSupplier(new UniformRandomInterval(-1.0, 1.0, new Random()));
+        builder.setInitialWeigthSupplier(new UniformRandomInterval(minWeight, maxWeight, new Random()));
         //builder.setInitialWeigthSupplier(new UniformRandomInterval(-0.0, 0.0, new Random())); // pro porovnani s Python verzi
         
         return builder.build();
     }
     
-    private static LayeredNeuralNetwork buildNetworkSigmoid(double minWeight, double maxWeight, int... architecture) {
+    private static LayeredNeuralNetwork buildNetworkSigmoid(double lam, double minWeight, double maxWeight, int... architecture) {
         LayeredNeuralNetworkBuilder builder = new LayeredNeuralNetworkBuilder();
         builder.setArchitecture(architecture);
         //builder.setActivationFunction(new HyperbolicTangens(1.7159, 2.0 / 3.0));
         //builder.setActivationFunctionDerivation(new HyperbolicTangensDerivation(1.7159, 2.0 / 3.0));
-        builder.setActivationFunction(new Sigmoid(1.0));
-        builder.setActivationFunctionDerivation(new SigmoidDerivation(1.0));
+        builder.setActivationFunction(new Sigmoid(lam));
+        builder.setActivationFunctionDerivation(new SigmoidDerivation(lam));
         
-        builder.setInitialWeigthSupplier(new UniformRandomInterval(0.0, 1.0, new Random()));
+        builder.setInitialWeigthSupplier(new UniformRandomInterval(minWeight, maxWeight, new Random()));
         //builder.setInitialWeigthSupplier(new UniformRandomInterval(-0.0, 0.0, new Random())); // pro porovnani s Python verzi
         
         return builder.build();
@@ -70,12 +70,15 @@ public class Main {
                 conf = new Configuration(args[0]);
                 //System.out.println("Settings loaded: " + conf.toString());
                 if(conf.getActivationFunction().equalsIgnoreCase("sigmoid")) {
-                    LayeredNeuralNetwork network = buildNetworkSigmoid(conf.getMinWeightInit(), conf.getMaxWeightInit(), conf.getArchitecture());
+                    LayeredNeuralNetwork network = buildNetworkSigmoid(conf.getSigmoidalParamLambda()
+                            , conf.getMinWeightInit(), conf.getMaxWeightInit(), conf.getArchitecture());
                     Trainer trainer = new Trainer(network, conf);
                     trainer.train();
                     trainer.test();
                 } else if (conf.getActivationFunction().equalsIgnoreCase("tanh")) {
-                    LayeredNeuralNetwork network = buildNetworkTanh(conf.getMinWeightInit(), conf.getMaxWeightInit(), conf.getArchitecture());
+                    LayeredNeuralNetwork network = buildNetworkTanh(conf.getTangentialParamA()
+                            , conf.getTangentialParamB(), conf.getMinWeightInit()
+                            , conf.getMaxWeightInit(), conf.getArchitecture());
                     Trainer trainer = new Trainer(network, conf);
                     trainer.train();
                     trainer.test();

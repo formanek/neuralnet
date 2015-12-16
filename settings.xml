@@ -1,7 +1,7 @@
 <settings>
-  <trainDataSet>trivial_train.txt</trainDataSet>
-  <testForStopDataset>trivial_testForStop.txt</testForStopDataset>
-  <independentTestDataset>trivial_independentTest.txt</independentTestDataset>
+  <trainDataSet>modulus_train.txt</trainDataSet>
+  <testForStopDataset>modulus_testForStop.txt</testForStopDataset>
+  <independentTestDataset>modulus_testForStop.txt</independentTestDataset>
   
   <activationFunction>sigmoid</activationFunction>
   <sigmoidalParamLambda>1.0</sigmoidalParamLambda>
@@ -10,9 +10,13 @@
   <tangentialParamB>0.666667</tangentialParamB>
   
   <maxTrainingIterations>100</maxTrainingIterations>
-  <desiredTestError>0.01</desiredTestError>
-  <learningSpeed>0.6</learningSpeed>
-  <architecture>6,8,1</architecture>
+  <desiredTestError>0.1</desiredTestError>
   
-  <initWeightsInt>0,1</initWeightsInt>
+  
+  <learningSpeed>0.4</learningSpeed>
+  <architecture>11,16,16,4</architecture>
+  
+  <initWeightsInt>-1,1</initWeightsInt>
+  <recordsBeforeWeightUpdate>1</recordsBeforeWeightUpdate>
+  <weightsUpdatesBeforeTest>1</weightsUpdatesBeforeTest>
 </settings>

@@ -41,6 +41,9 @@ public class Configuration {
     private double minWeightInit;
     private double maxWeightInit;
     
+    private int recordsBeforeWeightUpdate;
+    private int weightsUpdatesBeforeTest;
+    
     public Configuration(String filename) throws ParserConfigurationException, SAXException, IOException{
 	
             File inputFile = new File(filename);
@@ -103,7 +106,15 @@ public class Configuration {
                     this.minWeightInit = Double.parseDouble(initWeightsIntStr[0]);
                     this.maxWeightInit = Double.parseDouble(initWeightsIntStr[1]);
                 }
-            } 
+            }
+            if (doc.getElementsByTagName("recordsBeforeWeightUpdate").getLength() > 0) {
+            this.recordsBeforeWeightUpdate = Integer.parseInt(doc
+                    .getElementsByTagName("recordsBeforeWeightUpdate").item(0).getTextContent());
+            }
+            if (doc.getElementsByTagName("weightsUpdatesBeforeTest").getLength() > 0) {
+            this.weightsUpdatesBeforeTest = Integer.parseInt(doc
+                    .getElementsByTagName("weightsUpdatesBeforeTest").item(0).getTextContent());
+            }
     }
 
     /**
@@ -205,5 +216,19 @@ public class Configuration {
      */
     public double getMaxWeightInit() {
         return maxWeightInit;
+    }
+
+    /**
+     * @return the recordsBeforeWeightUpdate
+     */
+    public int getRecordsBeforeWeightUpdate() {
+        return recordsBeforeWeightUpdate;
+    }
+
+    /**
+     * @return the weightsUpdatesBeforeTest
+     */
+    public int getWeightsUpdatesBeforeTest() {
+        return weightsUpdatesBeforeTest;
     }
 }
